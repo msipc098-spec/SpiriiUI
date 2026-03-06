@@ -676,6 +676,104 @@ local TweenService = getService("TweenService")
 local Players = getService("Players")
 local CoreGui = getService("CoreGui")
 
+-- Insert user's custom load screen (from Spirii - LoadScreen.lua)
+local function RunIntro()
+	-- Begin of LoadScreen.lua content (slightly refactored to be local)
+	local _CoreGui = game:GetService("CoreGui")
+	local _TweenService = game:GetService("TweenService")
+	local _Players = game:GetService("Players")
+	local _Lighting = game:GetService("Lighting")
+	local _RunService = game:GetService("RunService")
+	local _LocalPlayer = _Players.LocalPlayer
+	local _Camera = workspace.CurrentCamera
+	local colA = Color3.fromRGB(120, 0, 255)
+	local colB = Color3.fromRGB(26, 18, 134)
+	local fov = 10
+	local targetFov = 0
+	local rot = 0
+	local spinning = false
+
+	_RunService.RenderStepped:Connect(function()
+		if spinning then
+			_Camera.CFrame = _Camera.CFrame * CFrame.Angles(0, 0, math.rad(rot))
+		end
+		if spinning then
+			_Camera.FieldOfView = fov
+			rot = rot + ((targetFov - rot) * 0.1)
+		end
+	end)
+
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "SpiriiIntro"
+	gui.Parent = _CoreGui
+	gui.IgnoreGuiInset = true
+
+	local blur = Instance.new("BlurEffect")
+	blur.Size = 0
+	blur.Parent = _Lighting
+
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(0.7, 0, 0.45, 0)
+	frame.BackgroundColor3 = colB
+	frame.BackgroundTransparency = 1
+	frame.Parent = gui
+
+	local title = Instance.new("TextLabel")
+	title.Size = UDim2.new(1, 0, 0.4, 0)
+	title.Position = UDim2.new(0, 0, 0.1, 0)
+	title.BackgroundTransparency = 1
+	title.Text = ""
+	title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 24
+	title.Parent = frame
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = colA
+	stroke.Thickness = 3
+	stroke.Transparency = 1
+	stroke.Parent = title
+
+	local canvas = Instance.new("Frame")
+	canvas.Size = UDim2.new(0.6, 0, 0.5, 0)
+	canvas.Position = UDim2.new(0.2, 0, 0.4, 0)
+	canvas.BackgroundTransparency = 1
+	canvas.Parent = frame
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 20)
+	corner.Parent = canvas
+
+	local canvasStroke = Instance.new("UIStroke")
+	canvasStroke.Color = colA
+	canvasStroke.Thickness = 2
+	canvasStroke.Parent = canvas
+
+	-- small animation sequence (kept simple)
+	spinning = true
+	_TweenService:Create(blur, TweenInfo.new(1.4), {Size = 10}):Play()
+	_TweenService:Create(frame, TweenInfo.new(1.8), {BackgroundTransparency = 0}):Play()
+	_TweenService:Create(title, TweenInfo.new(0.4), {TextSize = 48}):Play()
+
+	task.delay(6, function()
+		-- play small end sound if available
+		local s = Instance.new("Sound")
+		s.SoundId = "rbxassetid://118831572768072"
+		s.Volume = 1
+		s.Parent = game:GetService("SoundService")
+		s:Play()
+		game:GetService("Debris"):AddItem(s, 5)
+
+		_TweenService:Create(canvas, TweenInfo.new(1.2, Enum.EasingStyle.Exponential), {Position = UDim2.new(0.5, -225, 1.2, 0)}):Play()
+		_TweenService:Create(frame, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+		_TweenService:Create(blur, TweenInfo.new(0.8), {Size = 0}):Play()
+		task.wait(1.5)
+		gui:Destroy()
+		spinning = false
+	end)
+end
+
+
 -- Interface Management
 
 local Spirii = useStudio and script.Parent:FindFirstChild('Spirii') or game:GetObjects("rbxassetid://10804731440")[1]
