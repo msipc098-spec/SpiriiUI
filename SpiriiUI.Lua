@@ -1082,6 +1082,99 @@ local function PackColor(Color)
 	return {R = Color.R * 255, G = Color.G * 255, B = Color.B * 255}
 end    
 
+-- Create a new simplified UI inspired by the provided Veneyork script
+local function CreateVeneyorkUI()
+	local CoreGui = getService("CoreGui")
+	if CoreGui:FindFirstChild("SpiriiVUI") then
+		CoreGui.SpiriiVUI:Destroy()
+	end
+
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "SpiriiVUI"
+	gui.Parent = CoreGui
+	gui.IgnoreGuiInset = true
+
+	local main = Instance.new("Frame")
+	main.Size = UDim2.new(0, 520, 0, 360)
+	main.Position = UDim2.new(0.5, -260, 0.4, -180)
+	main.BackgroundColor3 = Color3.fromRGB(10,10,12)
+	main.BorderSizePixel = 0
+	main.Parent = gui
+	Instance.new("UICorner", main)
+
+	local stroke = Instance.new("UIStroke", main)
+	stroke.Color = SPIRII_ACCENT
+	stroke.Thickness = 2
+
+	local top = Instance.new("Frame")
+	top.Name = "Topbar"
+	top.Size = UDim2.new(1, 0, 0, 36)
+	top.BackgroundTransparency = 1
+	top.Parent = main
+
+	local title = Instance.new("TextLabel", top)
+	title.Size = UDim2.new(1, -70, 1, 0)
+	title.Position = UDim2.new(0, 10, 0, 0)
+	title.BackgroundTransparency = 1
+	title.Text = "Spirii | PISTOL ARENA"
+	title.TextColor3 = SPIRII_WHITE
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	title.Font = Enum.Font.GothamBold
+	title.TextSize = 18
+
+	local btn = Instance.new("TextButton", top)
+	btn.Size = UDim2.new(0, 36, 0, 20)
+	btn.Position = UDim2.new(1, -46, 0, 8)
+	btn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+	btn.Text = "-"
+	btn.TextColor3 = SPIRII_WHITE
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 18
+	Instance.new("UICorner", btn)
+
+	local content = Instance.new("Frame", main)
+	content.Size = UDim2.new(1, -20, 1, -56)
+	content.Position = UDim2.new(0, 10, 0, 46)
+	content.BackgroundTransparency = 1
+
+	-- minimize toggle
+	local minimized = false
+	btn.MouseButton1Click:Connect(function()
+		minimized = not minimized
+		if minimized then
+			main:TweenSize(UDim2.new(0, 260, 0, 36), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
+			btn.Text = "+"
+		else
+			main:TweenSize(UDim2.new(0, 520, 0, 360), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
+			btn.Text = "-"
+		end
+	end)
+
+	-- simple draggable implementation for the main frame
+	local dragging = false
+	local dragOffset
+	top.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			dragOffset = UserInputService:GetMouseLocation() - Vector2.new(main.AbsolutePosition.X, main.AbsolutePosition.Y)
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+			local pos = UserInputService:GetMouseLocation() - dragOffset
+			main.Position = UDim2.new(0, pos.X, 0, pos.Y)
+		end
+	end)
+	UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = false
+		end
+	end)
+
+	return gui
+end
+
+
 local function UnpackColor(Color)
 	return Color3.fromRGB(Color.R, Color.G, Color.B)
 end
