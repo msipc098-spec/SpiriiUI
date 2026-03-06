@@ -777,6 +777,126 @@ end
 -- Interface Management
 
 local Spirii = useStudio and script.Parent:FindFirstChild('Spirii') or game:GetObjects("rbxassetid://10804731440")[1]
+
+-- User requested full UI replacement: destroy original and create a new minimal Spirii GUI
+if Spirii and not useStudio then
+	pcall(function() Spirii:Destroy() end)
+end
+
+-- Build a fresh simplified UI that provides the elements the rest of the script expects
+local newSpirii = Instance.new("ScreenGui")
+newSpirii.Name = "Spirii"
+newSpirii.IgnoreGuiInset = true
+newSpirii.ResetOnSpawn = false
+newSpirii.Parent = game:GetService("CoreGui")
+
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Size = UDim2.new(0, 520, 0, 360)
+Main.Position = UDim2.new(0.5, -260, 0.4, -180)
+Main.BackgroundColor3 = Color3.fromRGB(10,10,12)
+Main.BorderSizePixel = 0
+Main.Parent = newSpirii
+Instance.new("UICorner", Main)
+
+local Shadow = Instance.new("ImageLabel", Main)
+Shadow.Name = "Shadow"
+Shadow.Size = UDim2.new(1, 0, 1, 0)
+Shadow.BackgroundTransparency = 1
+Shadow.Image = ""
+
+local Topbar = Instance.new("Frame", Main)
+Topbar.Name = "Topbar"
+Topbar.Size = UDim2.new(1, 0, 0, 36)
+Topbar.BackgroundTransparency = 1
+
+local CornerRepair = Instance.new("Frame", Topbar)
+CornerRepair.Name = "CornerRepair"
+CornerRepair.Size = UDim2.new(0, 16, 0, 16)
+CornerRepair.Position = UDim2.new(1, -16, 0, 0)
+CornerRepair.BackgroundTransparency = 1
+
+local ChangeSize = Instance.new("ImageLabel", Topbar)
+ChangeSize.Name = "ChangeSize"
+ChangeSize.Size = UDim2.new(0, 20, 0, 20)
+ChangeSize.Position = UDim2.new(1, -70, 0, 8)
+ChangeSize.BackgroundTransparency = 1
+
+local Hide = Instance.new("ImageLabel", Topbar)
+Hide.Name = "Hide"
+Hide.Size = UDim2.new(0, 20, 0, 20)
+Hide.Position = UDim2.new(1, -44, 0, 8)
+Hide.BackgroundTransparency = 1
+
+local Search = Instance.new("ImageLabel", Topbar)
+Search.Name = "Search"
+Search.Size = UDim2.new(0, 20, 0, 20)
+Search.Position = UDim2.new(1, -98, 0, 8)
+Search.BackgroundTransparency = 1
+
+local Settings = Instance.new("ImageLabel", Topbar)
+Settings.Name = "Settings"
+Settings.Size = UDim2.new(0, 20, 0, 20)
+Settings.Position = UDim2.new(1, -122, 0, 8)
+Settings.BackgroundTransparency = 1
+
+local Divider = Instance.new("Frame", Topbar)
+Divider.Name = "Divider"
+Divider.Size = UDim2.new(1, 0, 0, 1)
+Divider.Position = UDim2.new(0, 0, 1, -1)
+Divider.BackgroundColor3 = Color3.fromRGB(50,50,50)
+
+local Title = Instance.new("TextLabel", Topbar)
+Title.Name = "Title"
+Title.Size = UDim2.new(1, -130, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "Spirii"
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+
+local Elements = Instance.new("Folder", Main)
+Elements.Name = "Elements"
+
+local TabList = Instance.new("Frame", Main)
+TabList.Name = "TabList"
+TabList.Size = UDim2.new(0, 120, 1, -40)
+TabList.Position = UDim2.new(0, 8, 0, 40)
+TabList.BackgroundTransparency = 1
+
+local LoadingFrame = Instance.new("Frame", Main)
+LoadingFrame.Name = "LoadingFrame"
+LoadingFrame.Size = UDim2.new(1, 0, 0, 24)
+LoadingFrame.Position = UDim2.new(0, 0, 1, -24)
+LoadingFrame.BackgroundTransparency = 1
+local Version = Instance.new("TextLabel", LoadingFrame)
+Version.Name = "Version"
+Version.Size = UDim2.new(1, 0, 1, 0)
+Version.BackgroundTransparency = 1
+Version.Text = "Build"
+Version.TextColor3 = Color3.fromRGB(200,200,200)
+Version.Font = Enum.Font.SourceSans
+Version.TextSize = 12
+
+local Notifications = Instance.new("Folder", newSpirii)
+Notifications.Name = "Notifications"
+local Template = Instance.new("Frame", Notifications)
+Template.Name = "Template"
+Template.Size = UDim2.new(1, -40, 0, 60)
+Template.BackgroundTransparency = 1
+
+local Drag = Instance.new("Frame", newSpirii)
+Drag.Name = "Drag"
+Drag.Size = UDim2.new(0, 0, 0, 0)
+local Interact = Instance.new("Frame", Drag)
+Interact.Name = "Interact"
+local Cosmetic = Instance.new("Frame", Drag)
+Cosmetic.Name = "Drag"
+
+-- wire local variable Spirii to this new GUI so rest of script uses it
+Spirii = newSpirii
+
 local buildAttempts = 0
 local correctBuild = false
 local warned
